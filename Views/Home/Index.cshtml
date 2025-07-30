@@ -1,0 +1,350 @@
+﻿@{
+    ViewData["Title"] = "Trang Sinh Nhật";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            gap: 20px;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .birthday-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border: none;
+            border-radius: 50px;
+            padding: 20px 40px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-family: cursive;
+        }
+
+        .birthday-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .gift-box {
+            display: none;
+            width: 140px;
+            height: 140px;
+            margin: 30px auto;
+            position: relative;
+        }
+
+        @@keyframes slideIn {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0%);
+                opacity:1;
+            }
+        }
+        .gift-box.show {
+            display: inline-block;
+            animation-name: slideIn;
+            animation-duration:2s;
+            animation-fill-mode: forwards;
+        }
+
+        .gift-box-base {
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .gift-box-lid {
+            width: 110%;
+            height: 25%;
+            background: linear-gradient(45deg, #ff6b7a, #ff8a9b);
+            border-radius: 10px;
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            animation: lid-open 1s ease-out 1s forwards;
+            transform-origin: bottom;
+        }
+
+        .ribbon-vertical {
+            width: 12px;
+            height: 100%;
+            background: linear-gradient(to right, #ffd700, #ffed4e);
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+        }
+
+        .ribbon-horizontal {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(to bottom, #ffd700, #ffed4e);
+            position: absolute;
+            top: 40%;
+            left: 0;
+        }
+
+        .bow {
+            width: 30px;
+            height: 20px;
+            background: #ffd700;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+        }
+
+        .bow::before,
+        .bow::after {
+            content: '';
+            width: 15px;
+            height: 15px;
+            background: #ffd700;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .bow::before {
+            left: -10px;
+        }
+
+        .bow::after {
+            right: -10px;
+        }
+
+        /* CSS Animations */
+        @@keyframes bounce {
+            0% { 
+                transform: scale(0) rotate(180deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: scale(1.1) rotate(0deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+        }
+        
+
+
+        @@keyframes lid-open {
+            0% {
+                transform: rotateX(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: rotateX(-100deg);
+                opacity: 0;
+            }
+        }
+
+        .birthday-card {
+            display: none;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: white;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .birthday-card.show {
+            display: block;
+            animation: card-appear 0.4s ease-out forwards;
+        }
+
+        @@keyframes card-appear {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+
+        .birthday-card h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .birthday-card p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @@keyframes confetti-fall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        .loading-text {
+            display: none;
+            color: white;
+            font-size: 18px;
+            margin-top: 20px;
+            animation: pulse 1s infinite;
+        }
+
+        .loading-text::after {
+            content: '...';
+            animation: dots 1s infinite;
+        }
+
+        @@keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        @@keyframes pulse {
+            0% { 
+                opacity: 1; 
+            }
+            50% { 
+                opacity: 0.5; 
+            }
+            100% { 
+                opacity: 1; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       @*  Nút bấm chính *@
+        <button class="birthday-button" onclick="showBirthdayGift()">
+            🎉 Nhấn Để Nhận Quà! 🎁
+        </button>
+        
+       @*   Text loading *@
+        <div class="loading-text" id="loadingText">
+            Đang chuẩn bị quà sinh nhật...
+        </div>
+
+       @* Hộp quà *@
+        <div class="gift-box" id="giftBox">
+            <div class="gift-box-base">
+                <div class="ribbon-vertical"></div>
+                <div class="ribbon-horizontal"></div>
+            </div>
+            <div class="gift-box-lid">
+                <div class="bow"></div>
+            </div>
+        </div>
+
+        @* Thiệp sinh nhật *@
+        <div class="birthday-card" id="birthdayCard">
+            <h1>🎊Chúc Mừng Sinh Nhật!🎊</h1>
+            <p>🎂 Chúc bạn có một ngày sinh nhật thật vui vẻ và hạnh phúc!</p>
+            <p>🌟 Mong rằng tất cả những điều tốt đẹp nhất sẽ đến với bạn!</p>
+            <p>🎈 Một tuổi mới với nhiều niềm vui và thành công!</p>
+            <p style="font-family: Roboto; font-size: 15px; margin-top: 25px; opacity: 0.85;">
+                💝 Với tình yêu thương và lời chúc tốt đẹp nhất! 💝
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showBirthdayGift() {
+            const button = document.querySelector('.birthday-button');
+            const loadingText = document.getElementById('loadingText');
+            const giftBox = document.getElementById('giftBox');
+            const birthdayCard = document.getElementById('birthdayCard');
+            
+            // Ẩn nút
+            button.style.display = 'none';
+            
+            // Hiện loading text
+            loadingText.style.display = 'block';
+            
+            // Sau 2 giây: ẩn loading, hiện hộp quà và confetti
+            setTimeout(() => {
+                loadingText.style.display = 'none';
+                giftBox.classList.add('show');
+                createConfetti();
+            }, 2000);
+            
+            // Sau 5 giây: hiện thiệp sinh nhật
+            setTimeout(() => {
+                birthdayCard.classList.add('show');
+            }, 5000);
+        }
+        
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    // Xóa confetti sau khi animation kết thúc
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
